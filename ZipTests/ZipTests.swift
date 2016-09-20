@@ -158,14 +158,14 @@ class ZipTests: XCTestCase {
             let imageURL1 = NSBundle(forClass: ZipTests.self).URLForResource("3crBXeO", withExtension: "gif")!
             let imageURL2 = NSBundle(forClass: ZipTests.self).URLForResource("kYkLkPf", withExtension: "gif")!
             let folderURL = NSBundle(forClass: ZipTests.self).bundleURL.URLByAppendingPathComponent("Directory")
-            let targetImageURL1 = folderURL.URLByAppendingPathComponent("3crBXeO.gif")
-            let targetImageURL2 = folderURL.URLByAppendingPathComponent("kYkLkPf.gif")
-            if fileManager.fileExistsAtPath(folderURL.path!) {
-                try fileManager.removeItemAtURL(folderURL)
+            let targetImageURL1 = folderURL!.URLByAppendingPathComponent("3crBXeO.gif")
+            let targetImageURL2 = folderURL!.URLByAppendingPathComponent("kYkLkPf.gif")
+            if fileManager.fileExistsAtPath(folderURL!.path!) {
+                try fileManager.removeItemAtURL(folderURL!)
             }
-            try fileManager.createDirectoryAtURL(folderURL, withIntermediateDirectories: false, attributes: nil)
-            try fileManager.copyItemAtURL(imageURL1, toURL: targetImageURL1)
-            try fileManager.copyItemAtURL(imageURL2, toURL: targetImageURL2)
+            try fileManager.createDirectoryAtURL(folderURL!, withIntermediateDirectories: false, attributes: nil)
+            try fileManager.copyItemAtURL(imageURL1, toURL: targetImageURL1!)
+            try fileManager.copyItemAtURL(imageURL2, toURL: targetImageURL2!)
             let destinationURL = try Zip.quickZipFiles([folderURL], fileName: "directory")
             XCTAssertTrue(fileManager.fileExistsAtPath(destinationURL.path!))
         }
@@ -185,7 +185,7 @@ class ZipTests: XCTestCase {
                 print(progress)
             })
             let fileManager = NSFileManager.defaultManager()
-            XCTAssertTrue(fileManager.fileExistsAtPath(zipFilePath.path!))
+            XCTAssertTrue(fileManager.fileExistsAtPath(zipFilePath!.path!))
         }
         catch {
             XCTFail()
@@ -202,15 +202,15 @@ class ZipTests: XCTestCase {
                 print(progress)
             })
             let fileManager = NSFileManager.defaultManager()
-            XCTAssertTrue(fileManager.fileExistsAtPath(zipFilePath.path!))
-            guard let fileExtension = zipFilePath.pathExtension, let fileName = zipFilePath.lastPathComponent else {
+            XCTAssertTrue(fileManager.fileExistsAtPath(zipFilePath!.path!))
+            guard let fileExtension = zipFilePath!.pathExtension, let fileName = zipFilePath!.lastPathComponent else {
                 throw ZipError.UnzipFail
             }
             let directoryName = fileName.stringByReplacingOccurrencesOfString(".\(fileExtension)", withString: "")
             let documentsUrl = fileManager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)[0] as NSURL
             let destinationUrl = documentsUrl.URLByAppendingPathComponent(directoryName, isDirectory: true)
             try Zip.unzipFile(zipFilePath, destination: destinationUrl, overwrite: true, password: "password", progress: nil)
-            XCTAssertTrue(fileManager.fileExistsAtPath(destinationUrl.path!))
+            XCTAssertTrue(fileManager.fileExistsAtPath(destinationUrl!.path!))
         }
         catch {
             XCTFail()
